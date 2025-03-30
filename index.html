@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Insurance Match UI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+      integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      .custom-radio {
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border: 2px solid #000000;
+        border-radius: 50%;
+        outline: none;
+        cursor: pointer;
+      }
+      .custom-radio:checked {
+        background-color: #f97316;
+        border-color: #f97316;
+        position: relative;
+      }
+      .custom-radio:checked::after {
+        content: "";
+        width: 10px;
+        height: 10px;
+        background: white;
+        border-radius: 50%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+      .svg-ring {
+        position: absolute;
+        width: 120px;
+        height: 120px;
+        z-index: 10;
+        transition: top 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55),
+          left 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55),
+          right 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55),
+          bottom 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55),
+          transform 0.6s ease-in-out;
+        pointer-events: none;
+      }
+      .thin-ring circle {
+        stroke-width: 8;
+      }
+      @media (max-width: 768px) {
+        .svg-ring {
+          width: 80px;
+          height: 80px;
+        }
+        .thin-ring circle {
+          stroke-width: 6;
+        }
+      }
+      .step {
+        width: 100%;
+        transition: opacity 0.6s ease-in-out;
+        background-color: #fed7bf;
+        border-radius: 0.5rem;
+      }
+      .fixed-image-container {
+        position: relative;
+        display: flex;
+      }
+      .content-panel {
+        transition: opacity 0.6s ease-in-out;
+      }
+      .steps-container {
+        position: relative;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+      .full-width-step {
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body class="font-sans">
+    <svg
+      style="width: 0; height: 0; position: absolute"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <defs>
+        <linearGradient id="ring-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="18.73%" stop-color="#FC5B00" />
+          <stop offset="82.96%" stop-color="#F09400" />
+        </linearGradient>
+      </defs>
+    </svg>
+    <header class="bg-white shadow-sm">
+      <nav
+        class="container mx-auto flex flex-col md:flex-row items-center justify-between py-4 px-6"
+      >
+        <div class="flex items-center w-full md:w-auto justify-between">
+          <a href="#"
+            ><i class="fas fa-bag-shopping text-4xl text-[#ea580c]"></i
+          ></a>
+          <button id="mobile-menu-button" class="md:hidden text-gray-600">
+            <i class="fas fa-bars text-2xl"></i>
+          </button>
+        </div>
+        <ul
+          id="nav-links"
+          class="hidden md:flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-6 w-full md:w-auto items-center mt-4 md:mt-0"
+        >
+          <li>
+            <a href="#" class="text-gray-600 hover:text-gray-800">Services</a>
+          </li>
+          <li>
+            <a href="#" class="text-gray-600 hover:text-gray-800">Products</a>
+          </li>
+          <li>
+            <a href="#" class="text-gray-600 hover:text-gray-800">Community</a>
+          </li>
+          <div
+            class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 mt-4 md:mt-0 w-full md:w-auto"
+          >
+            <button
+              class="text-gray-600 hover:text-gray-800 border border-black rounded px-4 py-2 w-full md:w-auto"
+            >
+              Login / Sign-up
+            </button>
+            <button
+              class="bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-600 w-full md:w-auto"
+            >
+              View Demo
+            </button>
+          </div>
+        </ul>
+      </nav>
+    </header>
+    <main class="container bg-[#fed8bf] mx-auto py-8 md:py-12 px-4 md:px-6">
+      <div class="steps-container">
+        <div
+          class="step step-active rounded-lg flex flex-col md:flex-row items-center"
+        >
+          <div
+            id="fixed-left-content"
+            class="fixed-image-container w-full md:w-1/2"
+          >
+            <img
+              src="./person-on-laptop.png"
+              alt="Person with laptop"
+              class="rounded-t-lg md:rounded-t-none md:rounded-l-lg object-cover w-full h-64 md:h-full"
+            />
+            <svg
+              id="ring-tl"
+              class="svg-ring thin-ring"
+              viewBox="0 0 100 100"
+              xmlns="http://www.w3.org/2000/svg"
+              style="top: 20px; left: 20px;"
+            >
+              <circle
+                cx="50"
+                cy="50"
+                r="45"
+                stroke="url(#ring-gradient)"
+                fill="none"
+              />
+            </svg>
+            <svg
+              id="ring-br"
+              class="svg-ring thin-ring"
+              viewBox="0 0 100 100"
+              xmlns="http://www.w3.org/2000/svg"
+              style="bottom: 20px; right: 20px;"
+            >
+              <circle
+                cx="50"
+                cy="50"
+                r="45"
+                stroke="url(#ring-gradient)"
+                fill="none"
+              />
+            </svg>
+          </div>
+          <div id="content-1" class="content-panel w-full md:w-1/2 p-6 md:p-8">
+            <h1
+              class="text-4xl md:text-6xl font-bold text-[rgb(47,40,37)] mb-4"
+            >
+              Found your perfect insurance match?
+            </h1>
+            <p class="text-lg md:text-xl text-[rgb(47,40,37)] mb-6 md:mb-8">
+              Just share the details—we'll help you craft the perfect brief.
+            </p>
+            <form>
+              <label class="block text-[rgb(47,40,37)] mb-2"
+                >What type of coverage are you looking for?</label
+              >
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                <label
+                  class="flex items-center space-x-2 text-[rgb(47,40,37)] bg-white border border-gray-300 rounded-md p-4"
+                >
+                  <input
+                    type="radio"
+                    name="coverage"
+                    value="Life Insurance"
+                    class="custom-radio"
+                  />
+                  <span>Life Insurance</span>
+                </label>
+                <label
+                  class="flex items-center space-x-2 bg-white border border-gray-300 rounded-md p-4"
+                >
+                  <input
+                    type="radio"
+                    name="coverage"
+                    value="Health Insurance"
+                    class="custom-radio"
+                  />
+                  <span>Health Insurance</span>
+                </label>
+                <label
+                  class="flex items-center space-x-2 bg-white border border-gray-300 rounded-md p-4"
+                >
+                  <input
+                    type="radio"
+                    name="coverage"
+                    value="Vehicle Insurance"
+                    class="custom-radio"
+                  />
+                  <span>Vehicle Insurance</span>
+                </label>
+                <label
+                  class="flex items-center space-x-2 bg-white border border-gray-300 rounded-md p-4"
+                >
+                  <input
+                    type="radio"
+                    name="coverage"
+                    value="Property Insurance"
+                    class="custom-radio"
+                  />
+                  <span>Property Insurance</span>
+                </label>
+                <label
+                  class="flex items-center space-x-2 bg-white border border-gray-300 rounded-md p-4"
+                >
+                  <input
+                    type="radio"
+                    name="coverage"
+                    value="Travel Insurance"
+                    class="custom-radio"
+                  />
+                  <span>Travel Insurance</span>
+                </label>
+                <label
+                  class="flex items-center space-x-2 text-[rgb(47,40,37)] bg-white border border-gray-300 rounded-md p-4"
+                >
+                  <input
+                    type="radio"
+                    name="primary-goal"
+                    value="Other"
+                    class="custom-radio"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Other (please specify)"
+                    class="border-2 border-black rounded-md p-1 w-full"
+                  />
+                </label>
+              </div>
+              <button
+                type="button"
+                onclick="nextStep(1)"
+                class="text-black px-4 bg-[#feeddf] py-2 rounded-md border-4 border-white shadow-[0px_4px_4px_0px_#00000040] hover:bg-orange-600 hover:text-white hover:border-orange-600 transition duration-300 w-full sm:w-auto"
+              >
+                Getting started
+              </button>
+            </form>
+          </div>
+          <div
+            id="content-2"
+            class="content-panel w-full md:w-1/2 p-6 md:p-8 hidden"
+          >
+            <h1
+              class="text-4xl md:text-6xl font-bold text-[rgb(47,40,37)] mb-4"
+            >
+              Found your perfect insurance match?
+            </h1>
+            <p class="text-lg md:text-xl text-[rgb(47,40,37)] mb-6 md:mb-8">
+              Just share the details—we'll help you craft the perfect brief.
+            </p>
+            <form>
+              <div class="mb-4">
+                <div
+                  class="flex items-center justify-between bg-[#feeddf] rounded-md px-3 py-1"
+                >
+                  <span class="text-black font-bold italic"
+                    >Life Insurance</span
+                  >
+                  <button type="button" class="text-black hover:text-gray-600">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"
+                      ></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <label class="block text-black font-bold mb-2"
+                >What is your primary goal for this insurance policy?</label
+              >
+              <div
+                class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6"
+              >
+                <label
+                  class="flex items-center space-x-2 text-[rgb(47,40,37)] bg-white border border-gray-300 rounded-md p-4"
+                >
+                  <input
+                    type="radio"
+                    name="primary-goal"
+                    value="Financial protection for family"
+                    class="custom-radio"
+                  />
+                  <span>Financial protection for family</span>
+                </label>
+                <label
+                  class="flex items-center space-x-2 text-[rgb(47,40,37)] bg-white border border-gray-300 rounded-md p-4"
+                >
+                  <input
+                    type="radio"
+                    name="primary-goal"
+                    value="Medical expense coverage"
+                    class="custom-radio"
+                  />
+                  <span>Medical expense coverage</span>
+                </label>
+                <label
+                  class="flex items-center space-x-2 text-[rgb(47,40,37)] bg-white border border-gray-300 rounded-md p-4"
+                >
+                  <input
+                    type="radio"
+                    name="primary-goal"
+                    value="Protection against damage"
+                    class="custom-radio"
+                  />
+                  <span>Protection against damage</span>
+                </label>
+                <label
+                  class="flex items-center space-x-2 text-[rgb(47,40,37)] bg-white border border-gray-300 rounded-md p-4 col-span-3"
+                >
+                  <input
+                    type="radio"
+                    name="primary-goal"
+                    value="Other"
+                    class="custom-radio"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Other (please specify)"
+                    class="col-span-1 border-2 border-black rounded-md p-2 w-full"
+                  />
+                </label>
+              </div>
+              <div
+                class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4"
+              >
+                <button
+                  type="button"
+                  onclick="prevStep(2)"
+                  class="text-black px-4 bg-[#feeddf] py-2 rounded-md border-4 border-white shadow-[0px_4px_4px_0px_#00000040] hover:bg-[#f09400] hover:text-white hover:border-[#f09400] transition duration-300"
+                >
+                  Previous
+                </button>
+                <button
+                  type="button"
+                  onclick="nextStep(2)"
+                  class="text-black px-4 bg-[#feeddf] py-2 rounded-md border-4 border-white shadow-[0px_4px_4px_0px_#00000040] hover:bg-[#f09400] hover:text-white hover:border-[#f09400] transition duration-300"
+                >
+                  Next
+                </button>
+                <button
+                  type="button"
+                  onclick="nextStep(2)"
+                  class="text-black px-4 bg-[#feeddf] py-2 rounded-md border-4 border-white shadow-[0px_4px_4px_0px_#00000040] hover:bg-[#f09400] hover:text-white hover:border-[#f09400] transition duration-300"
+                >
+                  Skip
+                </button>
+              </div>
+            </form>
+          </div>
+          <div
+            id="content-3"
+            class="content-panel w-full md:w-1/2 p-6 md:p-8 hidden"
+          >
+            <h1
+              class="text-4xl md:text-6xl font-bold text-[rgb(47,40,37)] mb-4"
+            >
+              Found your perfect insurance match?
+            </h1>
+            <p class="text-lg md:text-xl text-[rgb(47,40,37)] mb-6 md:mb-8">
+              Just share the details—we'll help you craft the perfect brief.
+            </p>
+            <form>
+              <div class="mb-4">
+                <div
+                  class="flex items-center justify-between bg-[#feeddf] rounded-md px-3 py-1"
+                >
+                  <span class="text-black font-bold italic"
+                    >Life Insurance</span
+                  >
+                  <button type="button" class="text-black hover:text-gray-600">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"
+                      ></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <label class="block text-black font-bold mb-2"
+                >What is your preferred premium payment frequency?</label
+              >
+              <div
+                class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6"
+              >
+                <label
+                  class="flex items-center space-x-2 text-[rgb(47,40,37)] bg-white border border-gray-300 rounded-md p-4"
+                >
+                  <input
+                    type="radio"
+                    name="payment-frequency"
+                    value="Monthly"
+                    class="custom-radio"
+                  />
+                  <span>Monthly</span>
+                </label>
+                <label
+                  class="flex items-center space-x-2 text-[rgb(47,40,37)] bg-white border border-gray-300 rounded-md p-4"
+                >
+                  <input
+                    type="radio"
+                    name="payment-frequency"
+                    value="Quarterly"
+                    class="custom-radio"
+                  />
+                  <span>Quarterly</span>
+                </label>
+                <label
+                  class="flex items-center space-x-2 text-[rgb(47,40,37)] bg-white border border-gray-300 rounded-md p-4"
+                >
+                  <input
+                    type="radio"
+                    name="payment-frequency"
+                    value="Annually"
+                    class="custom-radio"
+                  />
+                  <span>Annually</span>
+                </label>
+                <label
+                  class="flex items-center space-x-2 text-[rgb(47,40,37)] bg-white border border-gray-300 rounded-md p-4 col-span-3"
+                >
+                  <input
+                    type="radio"
+                    name="payment-frequency"
+                    value="Other"
+                    class="custom-radio"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Other (please specify)"
+                    class="col-span-1 border-2 border-black rounded-md p-2 w-full"
+                  />
+                </label>
+              </div>
+              <div
+                class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4"
+              >
+                <button
+                  type="button"
+                  onclick="prevStep(3)"
+                  class="text-black px-4 bg-[#feeddf] py-2 rounded-md border-4 border-white shadow-[0px_4px_4px_0px_#00000040] hover:bg-[#f09400] hover:text-white hover:border-[#f09400] transition duration-300"
+                >
+                  Previous
+                </button>
+                <button
+                  type="button"
+                  onclick="showFinalStep()"
+                  class="text-black px-4 bg-[#feeddf] py-2 rounded-md border-4 border-white shadow-[0px_4px_4px_0px_#00000040] hover:bg-[#f09400] hover:text-white hover:border-[#f09400] transition duration-300"
+                >
+                  Next
+                </button>
+                <button
+                  type="button"
+                  onclick="showFinalStep()"
+                  class="text-black px-4 bg-[#feeddf] py-2 rounded-md border-4 border-white shadow-[0px_4px_4px_0px_#00000040] hover:bg-[#f09400] hover:text-white hover:border-[#f09400] transition duration-300"
+                >
+                  Skip
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div
+          id="step-4"
+          class="step step-inactive rounded-lg flex-col hidden full-width-step"
+        >
+          <div class="p-4 sm:p-8 w-full">
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">
+              Re-check & Confirm your Post
+            </h1>
+            <p class="text-gray-600 mb-6">
+              Please re-check and confirm the below specific details and proceed
+              further
+            </p>
+            <div class="bg-white p-4 sm:p-6 rounded-lg shadow-lg mb-6 w-full">
+              <div
+                class="flex flex-col sm:flex-row sm:items-center justify-between mb-4"
+              >
+                <h2
+                  class="text-base sm:text-lg font-semibold text-gray-800 mb-2"
+                >
+                  Product Name
+                  <span
+                    class="bg-[#e6e6e6] text-black font-semibold ml-0 sm:ml-2 px-2 sm:px-4 py-1 rounded-md block sm:inline mt-2 sm:mt-0"
+                    >Life Insurance Financial protection for family</span
+                  >
+                </h2>
+                <button
+                  type="button"
+                  class="text-black p-2 rounded-md shadow-[0px_0px_10px_0px_#0000004D] hover:text-white hover:bg-[#f09400] mt-2 sm:mt-0"
+                >
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"
+                    ></path>
+                  </svg>
+                </button>
+              </div>
+              <h1>Product Description</h1>
+              <div class="w-full bg-[#e6e6e6] mb-4 p-4">
+                <p class="text-black">Product Name: [Insurance Policy Name]</p>
+                <p class="text-black">
+                  Coverage Type: [Selected Coverage Type]
+                </p>
+                <p class="text-black">
+                  Policy Objective: [Selected Policy Objective]
+                </p>
+                <p class="text-black">Key Benefits:</p>
+                <ul class="list-disc list-inside text-black">
+                  <li>Comprehensive coverage for [Coverage Type]</li>
+                  <li>Financial security for [Policy Objective]</li>
+                </ul>
+                <p class="text-black">Contact Us:</p>
+                <p class="text-black">
+                  For more information or to purchase this policy, contact us at
+                  [Contact Information] or visit [Website Link]
+                </p>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2 mb-6 pl-2 sm:pl-6">
+              <input type="radio" name="confirm" class="custom-radio" />
+              <span class="text-black text-sm sm:text-base"
+                >I have verified and confirmed, the details a correct</span
+              >
+            </div>
+            <button
+              type="button"
+              class="text-black px-4 bg-[#feeddf] py-2 rounded-md border-4 border-white shadow-[0px_4px_4px_0px_#00000040] hover:bg-[#f09400] hover:text-white hover:border-[#f09400] transition duration-300 w-full sm:w-auto"
+            >
+              Yes, Proceed
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+    <footer class="bg-gray-900 text-white py-12 md:py-24">
+      <div
+        class="container mx-auto space-x-36 flex flex-col justify-center md:flex-row space-y-8 md:space-y-0"
+      >
+        <div class="text-center md:text-left">
+          <a href="#"
+            ><i class="fas fa-bag-shopping text-6xl text-[#ea580c] mb-4"></i
+          ></a>
+          <div class="flex justify-center md:justify-start space-x-4">
+            <a
+              href="#"
+              class="text-gray-400 hover:text-white text-3xl md:text-4xl"
+              ><i class="fa-brands fa-square-facebook"></i
+            ></a>
+            <a
+              href="#"
+              class="text-gray-400 hover:text-white text-3xl md:text-4xl"
+              ><i class="fab fa-instagram"></i
+            ></a>
+            <a
+              href="#"
+              class="text-gray-400 hover:text-white text-3xl md:text-4xl"
+              ><i class="fab fa-linkedin"></i
+            ></a>
+            <a
+              href="#"
+              class="text-gray-400 hover:text-white text-3xl md:text-4xl"
+              ><i class="fab fa-twitter"></i
+            ></a>
+            <a
+              href="#"
+              class="text-gray-400 hover:text-white text-3xl md:text-4xl"
+              ><i class="fab fa-youtube"></i
+            ></a>
+          </div>
+        </div>
+        <div class="text-center md:text-left">
+          <h3 class="font-bold mb-4 md:mb-8 text-xl md:text-2xl">Services</h3>
+          <p>Explore products AI Next-GEN</p>
+        </div>
+        <div class="text-center md:text-left">
+          <h3 class="font-bold mb-4 md:mb-8 text-xl md:text-2xl">Support</h3>
+          <p>Support</p>
+        </div>
+        <div class="text-center md:text-left">
+          <h3 class="font-bold mb-4 md:mb-8 text-xl md:text-2xl">About</h3>
+          <p>About us</p>
+          <p>Contact us</p>
+        </div>
+      </div>
+    </footer>
+    <script>
+      window.addEventListener("DOMContentLoaded", () => {
+        initializeCircles();
+      });
+      function initializeCircles() {
+        document.querySelectorAll(".step").forEach((step) => {
+          if (window.getComputedStyle(step).position === "static") {
+            step.style.position = "relative";
+          }
+        });
+      }
+      const ringPositions = {
+        1: {
+          tl: { top: "20px", left: "20px", right: "auto", bottom: "auto" },
+          br: { top: "auto", left: "auto", right: "20px", bottom: "20px" },
+        },
+        2: {
+          tl: { top: "20px", left: "auto", right: "20px", bottom: "auto" },
+          br: { top: "auto", left: "20px", right: "auto", bottom: "20px" },
+        },
+        3: {
+          tl: { top: "20px", left: "20px", right: "auto", bottom: "auto" },
+          br: { top: "auto", left: "auto", right: "20px", bottom: "20px" },
+        },
+      };
+      function nextStep(currentStep) {
+        const currentContent = document.getElementById(
+          `content-${currentStep}`
+        );
+        const nextContent = document.getElementById(
+          `content-${currentStep + 1}`
+        );
+        currentContent.style.opacity = "0";
+        const ringTopLeft = document.getElementById("ring-tl");
+        const ringBottomRight = document.getElementById("ring-br");
+        ringTopLeft.classList.add("ring-moving");
+        ringBottomRight.classList.add("ring-moving");
+        const nextStep = currentStep + 1;
+        if (nextStep <= 3) {
+          setTimeout(() => {
+            Object.entries(ringPositions[nextStep].tl).forEach(
+              ([prop, value]) => {
+                ringTopLeft.style[prop] = value;
+              }
+            );
+            Object.entries(ringPositions[nextStep].br).forEach(
+              ([prop, value]) => {
+                ringBottomRight.style[prop] = value;
+              }
+            );
+          }, 50);
+        }
+        setTimeout(() => {
+          ringTopLeft.classList.remove("ring-moving");
+          ringBottomRight.classList.remove("ring-moving");
+        }, 800);
+        setTimeout(() => {
+          currentContent.classList.add("hidden");
+          nextContent.classList.remove("hidden");
+          setTimeout(() => {
+            nextContent.style.opacity = "1";
+          }, 50);
+        }, 600);
+      }
+      function prevStep(currentStep) {
+        const currentContent = document.getElementById(
+          `content-${currentStep}`
+        );
+        const prevContent = document.getElementById(
+          `content-${currentStep - 1}`
+        );
+        currentContent.style.opacity = "0";
+        const ringTopLeft = document.getElementById("ring-tl");
+        const ringBottomRight = document.getElementById("ring-br");
+        ringTopLeft.classList.add("ring-moving");
+        ringBottomRight.classList.add("ring-moving");
+        const prevStepNum = currentStep - 1;
+        setTimeout(() => {
+          Object.entries(ringPositions[prevStepNum].tl).forEach(
+            ([prop, value]) => {
+              ringTopLeft.style[prop] = value;
+            }
+          );
+          Object.entries(ringPositions[prevStepNum].br).forEach(
+            ([prop, value]) => {
+              ringBottomRight.style[prop] = value;
+            }
+          );
+        }, 50);
+        setTimeout(() => {
+          ringTopLeft.classList.remove("ring-moving");
+          ringBottomRight.classList.remove("ring-moving");
+        }, 800);
+        setTimeout(() => {
+          currentContent.classList.add("hidden");
+          prevContent.classList.remove("hidden");
+          setTimeout(() => {
+            prevContent.style.opacity = "1";
+          }, 50);
+        }, 600);
+      }
+      function showFinalStep() {
+        const mainStepContainer = document.querySelector(".step.step-active");
+        const step4 = document.getElementById("step-4");
+        mainStepContainer.style.opacity = "0";
+        setTimeout(() => {
+          mainStepContainer.classList.add("hidden");
+          mainStepContainer.classList.remove("step-active");
+          step4.classList.remove("hidden", "step-inactive");
+          step4.classList.add("step-active");
+          setTimeout(() => {
+            step4.style.opacity = "1";
+          }, 50);
+        }, 600);
+      }
+      document
+        .getElementById("mobile-menu-button")
+        .addEventListener("click", function () {
+          const navLinks = document.getElementById("nav-links");
+          navLinks.classList.toggle("hidden");
+        });
+    </script>
+  </body>
+</html>
